@@ -313,10 +313,12 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-AZLUIKit_Example/Pods-AZLUIKit_Example-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AZLExtend/AZLExtend.framework",
 				"${BUILT_PRODUCTS_DIR}/AZLUIKit/AZLUIKit.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AZLExtend.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AZLUIKit.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;

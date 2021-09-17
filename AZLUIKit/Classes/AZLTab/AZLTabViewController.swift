@@ -10,9 +10,10 @@ import UIKit
 open class AZLTabViewController: UIViewController {
 
     public var tabView:AZLTabView?
+    /// tabView的高度(不含safeArea)
     public var tabViewHeight:CGFloat = 79
 
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         
         let tabViewHeight:CGFloat = self.tabViewHeight
@@ -21,9 +22,10 @@ open class AZLTabViewController: UIViewController {
         self.view.addSubview(self.tabView!)
     }
 
-    public override func viewWillLayoutSubviews() {
+    open override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
+        // 自动根据safeArea调整tabView的高度
         var safeBottom:CGFloat = 0
         if #available(iOS 11.0, *) {
             safeBottom = self.view.safeAreaInsets.bottom

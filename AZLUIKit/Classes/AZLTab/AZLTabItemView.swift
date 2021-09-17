@@ -8,25 +8,35 @@
 import UIKit
 
 open class AZLBaseTabItemView: UIView {
+    /// 更新选中/未选中时的样式
     open func updateUI(isSelected:Bool) {
         // 继承重写
     }
 }
 
 public class AZLTabItemView: AZLBaseTabItemView {
-
+    
+    /// 未选中时的图片
     public var normalImage:UIImage?
+    /// 选中时的图片
     public var selectedImage:UIImage?
     
+    /// 未选中时的颜色
     public var normalColor:UIColor?
+    /// 选中时的颜色
     public var seletedColor:UIColor?
     
+    /// 未选中时的字体
     public var normalFont:UIFont?
+    /// 选中时的字体
     public var selectedFont:UIFont?
     
+    /// 显示的文字内容
     public var nameString:String?
     
+    /// 文字显示的label
     private var nameLabel:UILabel?
+    /// 显示图标的view
     private var imageView:UIImageView?
     
     public override func awakeFromNib() {

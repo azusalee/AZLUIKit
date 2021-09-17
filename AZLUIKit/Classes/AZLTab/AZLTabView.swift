@@ -6,30 +6,33 @@
 //
 
 import UIKit
-import AZLExtend
+import AZLExtendSwift
 
 public class AZLTabView: UIView {
-    
+    /// itemView的间隔
     public var itemLayoutInset:UIEdgeInsets = .zero {
         didSet{
             self.setNeedsLayout()
         }
     }
+    /// 中间View的间隔
     public var centerLayoutInset:UIEdgeInsets = .zero {
         didSet{
             self.setNeedsLayout()
         }
     }
-    
+    /// itemView被点击时的回调
     public var itemShouldSelectBlock:((_ index:Int) -> Bool)?
 
+    /// itemView数组
     private var itemViews:[AZLBaseTabItemView] = []
-    
+    /// 中间View
     private var centerView:UIView?
+    /// 中间view的点击事件
     private var centerViewTapBlock:(() -> Void)?
-    
+    /// 当前选中索引
     private var selectedIndex:Int = 0
-    
+    /// 背景view
     private var backgroundView:UIView?
 
     public override func awakeFromNib() {
@@ -76,6 +79,7 @@ public class AZLTabView: UIView {
         }
     }
     
+    /// 设置背景View
     public func setBackgroundView(view:UIView?) {
         self.backgroundView?.removeFromSuperview()
         if view != nil {
@@ -84,6 +88,7 @@ public class AZLTabView: UIView {
         self.backgroundView = view
     }
     
+    /// 设置当前选中itemView(index < itemViews.count才有效)
     public func select(index:Int) {
         if index < self.itemViews.count {
             self.itemViews[self.selectedIndex].updateUI(isSelected: false)
@@ -92,11 +97,13 @@ public class AZLTabView: UIView {
         }
     }
     
+    /// 获取当前选中的Index
     public func getSelectIndex() -> Int {
         return self.selectedIndex
     }
     
-    func setTabArray(_ tabArray:[(image:UIImage?, selectedImage:UIImage?, name:String, normalColor:UIColor?, selectedColor:UIColor?, normalFont:UIFont?, selectedFont:UIFont?)]) {
+    /// 设置数据
+    public func setTabArray(_ tabArray:[(image:UIImage?, selectedImage:UIImage?, name:String, normalColor:UIColor?, selectedColor:UIColor?, normalFont:UIFont?, selectedFont:UIFont?)]) {
         let width = self.bounds.width/4
         let height = self.bounds.height
         var itemViews:[AZLBaseTabItemView] = []
@@ -107,7 +114,7 @@ public class AZLTabView: UIView {
                 itemView.selectedImage = tabItem.selectedImage
             }else{
                 if tabItem.selectedColor != nil {
-                    itemView.selectedImage = tabItem.image?.azl_image(withGradientTintColor: tabItem.selectedColor)
+                    itemView.selectedImage = tabItem.image?.azl_tintImage(color: tabItem.selectedColor!)
                 }else{
                     itemView.selectedImage = tabItem.image
                 }
@@ -123,7 +130,8 @@ public class AZLTabView: UIView {
         self.setTabArray(itemViews: itemViews)
     }
     
-    func setTabArray(itemViews:[AZLBaseTabItemView]) {
+    /// 设置自定义itemView
+    public func setTabArray(itemViews:[AZLBaseTabItemView]) {
         for itemView in self.itemViews {
             itemView.removeFromSuperview()
         }
@@ -139,7 +147,8 @@ public class AZLTabView: UIView {
         self.setNeedsLayout()
     }
     
-    func setCenterView(_ centerView:UIView?, tapBlock:(() -> Void)?) {
+    /// 设置中心View
+    public func setCenterView(_ centerView:UIView?, tapBlock:(() -> Void)?) {
         self.centerView?.removeFromSuperview()
         if centerView != nil {
             self.addSubview(centerView!)
@@ -170,7 +179,7 @@ public class AZLTabView: UIView {
                 while index < leftMaxCount {
                     let itemView = self.itemViews[index]
                     itemView.frame = CGRect.init(x: left, y: self.itemLayoutInset.top, width: leftItemWidth, height: self.bounds.height-self.itemLayoutInset.top)
-                    left += itemView.width
+                    left += itemView.azl_width()
                     index += 1
                 }
                 
@@ -180,7 +189,7 @@ public class AZLTabView: UIView {
                     while index < self.itemViews.count {
                         let itemView = self.itemViews[index]
                         itemView.frame = CGRect.init(x: left, y: self.itemLayoutInset.top, width: rightItemWidth, height: self.bounds.height-self.itemLayoutInset.top)
-                        left += itemView.width
+                        left += itemView.azl_width()
                         index += 1
                     }
                 }
@@ -192,7 +201,7 @@ public class AZLTabView: UIView {
                 while index < self.itemViews.count {
                     let itemView = self.itemViews[index]
                     itemView.frame = CGRect.init(x: left, y: self.itemLayoutInset.top, width: itemWidth, height: self.bounds.height-self.itemLayoutInset.top)
-                    left += itemView.width
+                    left += itemView.azl_width()
                     index += 1
                 }
             }
@@ -204,7 +213,7 @@ public class AZLTabView: UIView {
 
 // 常用背景View创建方法
 public extension AZLTabView {
-    // 中间镂空背景
+    /// 中间半圆镂空背景，需要设置centerView后，再设置才有效
     func addCenterHollowBackgroundView(centerTop:CGFloat, color:UIColor) {
         let corner:CGFloat = 8
         let centerSize:CGFloat = self.centerView?.bounds.size.width ?? 0

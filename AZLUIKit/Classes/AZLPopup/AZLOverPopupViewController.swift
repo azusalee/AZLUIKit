@@ -84,16 +84,17 @@ public protocol AZLOverPopupViewControllerDelegate: NSObjectProtocol {
     /// require 返回需要从下往上出现的view
     func overPopupView() -> UIView?
     
+    // 下面几个回调方法，需要准确设置，否则拖动动画会不太准确
     /// option 主要内容view高度将要变化的回调
     func overPopupViewHeightShouldChange(height: CGFloat)
-    /// option popup view的最小高度(默认为屏幕的一半)
+    /// option popup view的最小高度(默认为屏幕高度的一半)
     func overPopupViewMinHeight() -> CGFloat
     /// option popup view的最大高度(默认为屏幕高度-状态栏高度)
     func overPopupViewMaxHeight() -> CGFloat
     
 }
 
-extension AZLOverPopupViewControllerDelegate {
+public extension AZLOverPopupViewControllerDelegate {
     /// 
     func overPopupViewHeightShouldChange(height: CGFloat) {
         if let popupView = self.overPopupView() {
@@ -128,7 +129,7 @@ open class AZLOverPopupViewController: UIViewController, UIGestureRecognizerDele
     /// overPopupView的相关代理
     public weak var overPopupDelegate: AZLOverPopupViewControllerDelegate?
     /// 点击空白处取消界面的手势
-    public var blankDismissTapGesture: UITapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(dismissTap(recognizer:)))
+    public var blankDismissTapGesture: UITapGestureRecognizer?
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -146,14 +147,14 @@ open class AZLOverPopupViewController: UIViewController, UIGestureRecognizerDele
         //self.fullOverContainerView()?.backgroundColor = UIColor.ks_color(colorValue: .black1)
         self.view.frame = UIScreen.main.bounds
         self.view.backgroundColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0.6)
+        self.blankDismissTapGesture = UITapGestureRecognizer.init(target: self, action: #selector(dismissTap(recognizer:)))
         
         // 背景添加消失点击
-        self.view.addGestureRecognizer(self.blankDismissTapGesture)
+        self.view.addGestureRecognizer(self.blankDismissTapGesture!)
         
         // 添加拖动手势
-        if let overPopupView = self.overPopupDelegate?.overPopupView() {
-            self.addPan(inView: overPopupView)
-        }
+        let panGesture = UIPanGestureRecognizer.init(target: self, action: #selector(containerViewPan(recognizer:)))
+        self.view.addGestureRecognizer(panGesture)
     }
     
     public override func viewDidLayoutSubviews() {
@@ -184,13 +185,6 @@ open class AZLOverPopupViewController: UIViewController, UIGestureRecognizerDele
                 }
             }
         }
-    }
-    
-    // 添加手势
-    public func addPan(inView: UIView) {
-        let gesture = UIPanGestureRecognizer.init(target: self, action: #selector(containerViewPan(recognizer:)))
-        inView.addGestureRecognizer(gesture)
-
     }
     
     public func addTap(inView: UIView) {

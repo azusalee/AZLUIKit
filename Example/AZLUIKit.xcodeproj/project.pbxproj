@@ -14,6 +14,9 @@
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
+		8C282EFF2702F3C10004E1DC /* DemoTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C282EFE2702F3C10004E1DC /* DemoTabViewController.swift */; };
+		8C282F042702F5000004E1DC /* DemoOverPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C282F022702F5000004E1DC /* DemoOverPopupViewController.swift */; };
+		8C282F052702F5000004E1DC /* DemoOverPopupViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C282F032702F5000004E1DC /* DemoOverPopupViewController.xib */; };
 		D27C00C640D56529D94BA054 /* Pods_AZLUIKit_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DCFCE42D2C4D20154649308 /* Pods_AZLUIKit_Example.framework */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +48,9 @@
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		7A03F5E13C5AFD662FF09D16 /* Pods-AZLUIKit_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AZLUIKit_Example.release.xcconfig"; path = "Target Support Files/Pods-AZLUIKit_Example/Pods-AZLUIKit_Example.release.xcconfig"; sourceTree = "<group>"; };
+		8C282EFE2702F3C10004E1DC /* DemoTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoTabViewController.swift; sourceTree = "<group>"; };
+		8C282F022702F5000004E1DC /* DemoOverPopupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoOverPopupViewController.swift; sourceTree = "<group>"; };
+		8C282F032702F5000004E1DC /* DemoOverPopupViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DemoOverPopupViewController.xib; sourceTree = "<group>"; };
 		9BB97052E7914F1F0E73B5DC /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		E8B2861F8D307C14F2FEA0B9 /* Pods_AZLUIKit_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AZLUIKit_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -106,6 +112,7 @@
 			children = (
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
+				8C282EFB2702F19C0004E1DC /* Demo */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -148,6 +155,16 @@
 				9BB97052E7914F1F0E73B5DC /* LICENSE */,
 			);
 			name = "Podspec Metadata";
+			sourceTree = "<group>";
+		};
+		8C282EFB2702F19C0004E1DC /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				8C282EFE2702F3C10004E1DC /* DemoTabViewController.swift */,
+				8C282F022702F5000004E1DC /* DemoOverPopupViewController.swift */,
+				8C282F032702F5000004E1DC /* DemoOverPopupViewController.xib */,
+			);
+			name = Demo;
 			sourceTree = "<group>";
 		};
 		E6FFA646AFC62605A5D06223 /* Frameworks */ = {
@@ -246,6 +263,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C282F052702F5000004E1DC /* DemoOverPopupViewController.xib in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
@@ -333,8 +351,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C282F042702F5000004E1DC /* DemoOverPopupViewController.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				8C282EFF2702F3C10004E1DC /* DemoTabViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

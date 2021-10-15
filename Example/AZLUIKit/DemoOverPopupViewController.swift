@@ -18,6 +18,12 @@ class DemoOverPopupViewController: AZLOverPopupViewController {
         
         // 设置代理
         self.overPopupDelegate = self
+        
+        let processView = AZLProcessView.init(frame: CGRect.init(x: 30, y: 200, width: 200, height: 10))
+        processView.processColor = UIColor.orange
+        processView.process = 1
+        processView.backgroundColor = UIColor.gray
+        self.containerView.addSubview(processView)
     }
 
 }

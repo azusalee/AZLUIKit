@@ -28,7 +28,7 @@ public class AZLProcessView: UIView {
 
     public override func awakeFromNib() {
         super.awakeFromNib()
-        self.setup()
+        
     }
     
     public override init(frame: CGRect) {
@@ -38,12 +38,14 @@ public class AZLProcessView: UIView {
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        self.setup()
     }
     
     private func setup() {
         let layer = CAShapeLayer.init()
         layer.frame = self.bounds
         self.processLayer = layer
+        self.processLayer?.strokeColor = self.processColor.cgColor
         self.layer.addSublayer(layer)
     }
     
@@ -51,8 +53,8 @@ public class AZLProcessView: UIView {
         super.layoutSubviews()
         self.processLayer?.frame = self.bounds
         var process = self.process
-        process = min(process, 0)
-        process = max(process, 1)
+        process = max(process, 0)
+        process = min(process, 1)
         if process == 0 {
             self.processLayer?.isHidden = true
             return

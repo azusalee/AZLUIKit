@@ -7,77 +7,7 @@
 //
 
 import UIKit
-
-/// 从下至上的过度动画
-public class AZLOverPopupTransition: NSObject {
-    public enum Transition {
-        /// 出現
-        case present
-        /// 消失
-        case dismiss
-    }
-    
-    /// 轉場動畫類型
-    public var tran: Transition = .present
-    /// 動畫時長
-    static let duration = 0.275
-    /// 容器view(需要做彈出動畫效果的view)
-    public weak var containerView: UIView?
-    
-    /// 開始背景色
-    public var startBackgroundColor: UIColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0.0)
-    /// 結束背景色
-    public var endBackgroundColor: UIColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0.6)
-    
-    /// 出現動畫
-    private func presentTransition(transitionContext: UIViewControllerContextTransitioning) {
-        if let toVC: UIViewController = transitionContext.viewController(forKey: .to) {
-            if let containerView = self.containerView {
-                toVC.view.backgroundColor = self.startBackgroundColor
-                containerView.transform = CGAffineTransform.init(translationX: 0, y: UIScreen.main.bounds.size.height)
-                UIView.animate(withDuration: AZLOverPopupTransition.duration, delay: 0, options: [.curveEaseInOut], animations: {
-                    containerView.transform = CGAffineTransform.init(translationX: 0, y: 0)
-                    toVC.view.backgroundColor = self.endBackgroundColor
-                }) { (_) in
-                    transitionContext.completeTransition(true)
-                }
-            }
-            transitionContext.containerView.addSubview(toVC.view)
-        }
-    }
-    
-    /// 消失動畫
-    private func dismissTransition(transitionContext: UIViewControllerContextTransitioning) {
-        if let fromVC: UIViewController = transitionContext.viewController(forKey: .from) {
-            if let containerView = self.containerView {
-                fromVC.view.backgroundColor = self.endBackgroundColor
-                //containerView.transform = CGAffineTransform.init(translationX: 0, y: 0)
-                UIView.animate(withDuration: AZLOverPopupTransition.duration, delay: 0, options: [.curveEaseInOut], animations: {
-                    containerView.transform = CGAffineTransform.init(translationX: 0, y: UIScreen.main.bounds.size.height)
-                    fromVC.view.backgroundColor = self.startBackgroundColor
-                }) { (_) in
-                    transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-                }
-            }
-            transitionContext.containerView.addSubview(fromVC.view)
-        }
-    }
-}
-
-extension AZLOverPopupTransition: UIViewControllerAnimatedTransitioning {
-    public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return AZLOverPopupTransition.duration
-    }
-    
-    public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        switch self.tran {
-        case .present:
-            presentTransition(transitionContext: transitionContext)
-        case .dismiss:
-            dismissTransition(transitionContext: transitionContext)
-        }
-    }
-}
+import AZLExtendSwift
 
 public protocol AZLOverPopupViewControllerDelegate: NSObjectProtocol {
     
@@ -91,11 +21,11 @@ public protocol AZLOverPopupViewControllerDelegate: NSObjectProtocol {
     func overPopupViewMinHeight() -> CGFloat
     /// option popup view的最大高度(默认为屏幕高度-状态栏高度)
     func overPopupViewMaxHeight() -> CGFloat
-    
 }
 
+// 代理方法默认实现
 public extension AZLOverPopupViewControllerDelegate {
-    /// 
+    /// 默认直接修改overPopupView的高度约束
     func overPopupViewHeightShouldChange(height: CGFloat) {
         if let popupView = self.overPopupView() {
             // 检查是否通过约束来调整高度
@@ -120,16 +50,26 @@ public extension AZLOverPopupViewControllerDelegate {
     }
 }
 
+/**
+从下往上弹出的popup vc基类 
+
+含有半屏显示和全屏显示两种状态(半屏和全屏只是一个相对的说法，具体显示的高度可以通过代理设置)
+ */
 open class AZLOverPopupViewController: UIViewController, UIGestureRecognizerDelegate {
 
-    private var transitionPercent: UIPercentDrivenInteractiveTransition?
     /// 拖动手势开始时的frame
     private var startFrame: CGRect = CGRect.zero
     
     /// overPopupView的相关代理
     public weak var overPopupDelegate: AZLOverPopupViewControllerDelegate?
+    
+    // 手势在viewDidload后有效
     /// 点击空白处取消界面的手势
     public var blankDismissTapGesture: UITapGestureRecognizer?
+    /// 拖动手势
+    public var popupPanGesture: UIPanGestureRecognizer?
+    /// 消失所需拖动速度，拖动放开时速度比这快会触发页面消失
+    public var dismissDragSpeed: Double = 480
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -144,7 +84,6 @@ open class AZLOverPopupViewController: UIViewController, UIGestureRecognizerDele
     open override func viewDidLoad() {
         super.viewDidLoad()
         
-        //self.fullOverContainerView()?.backgroundColor = UIColor.ks_color(colorValue: .black1)
         self.view.frame = UIScreen.main.bounds
         self.view.backgroundColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0.6)
         self.blankDismissTapGesture = UITapGestureRecognizer.init(target: self, action: #selector(dismissTap(recognizer:)))
@@ -155,10 +94,7 @@ open class AZLOverPopupViewController: UIViewController, UIGestureRecognizerDele
         // 添加拖动手势
         let panGesture = UIPanGestureRecognizer.init(target: self, action: #selector(containerViewPan(recognizer:)))
         self.view.addGestureRecognizer(panGesture)
-    }
-    
-    public override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
+        self.popupPanGesture = panGesture
     }
     
     /// 显示内容最大高度的样式
@@ -186,14 +122,8 @@ open class AZLOverPopupViewController: UIViewController, UIGestureRecognizerDele
             }
         }
     }
-    
-    public func addTap(inView: UIView) {
-        let gesture = UITapGestureRecognizer.init(target: self, action: #selector(dismissTap(recognizer:)))
-        gesture.delegate = self
-        inView.addGestureRecognizer(gesture)
 
-    }
-
+    /// 拖动内容view手势的回调
     @objc 
     func containerViewPan(recognizer: UIPanGestureRecognizer) {
         guard let maxHeight = self.overPopupDelegate?.overPopupViewMaxHeight() else {
@@ -205,19 +135,17 @@ open class AZLOverPopupViewController: UIViewController, UIGestureRecognizerDele
     
         /// 拖动手势处理
         if let overPopupView = self.overPopupDelegate?.overPopupView() {
-            var progress = recognizer.translation(in: overPopupView).y/UIScreen.main.bounds.size.height
             let moveY = recognizer.translation(in: overPopupView).y
-            let moveProgress = moveY/overPopupView.bounds.size.height
-            progress = min(1.0, max(0.0, progress))
-            
+            let touchY = recognizer.location(in: self.view).y
+            let moveProgress = touchY/self.view.bounds.size.height
+
             switch recognizer.state {
-            case .began:    // 开始滑动：初始化UIPercentDrivenInteractiveTransition对象，并开启导航pop
+            case .began:    
+                // 开始滑动：初始化UIPercentDrivenInteractiveTransition对象，并开启导航pop
                 self.startFrame = overPopupView.frame
-                //self.transitionPercent = UIPercentDrivenInteractiveTransition()
-                //self.dismiss(animated: true, completion: nil)
                 
-            case .changed:   // 滑动过程中，根据在屏幕上滑动的百分比更新状态
-               // self.transitionPercent?.update(progress)
+            case .changed:  
+                // 滑动过程中，根据在屏幕上滑动的百分比更新状态
                 var targetFrame = self.startFrame
                 var offsetY: CGFloat = 0
                 targetFrame.size.height -= moveY
@@ -232,15 +160,11 @@ open class AZLOverPopupViewController: UIViewController, UIGestureRecognizerDele
                 
             case .ended, .cancelled:    // 滑动结束或取消时，判断手指位置，滑动速度较快或快到底端时完成动画
                 let velocity = recognizer.velocity(in: overPopupView).y
-                if velocity > 480 || (moveProgress > 0.75 && velocity > -160) {
+                if velocity > self.dismissDragSpeed || (moveProgress > 0.8 && velocity > -self.dismissDragSpeed/2) {
                     // 一定速度或到了靠底的位置，自动消失
-                    //self.transitionPercent = UIPercentDrivenInteractiveTransition()
-                    //self.transitionPercent?.update(progress)
-                    //self.transitionPercent?.finish()
-                    
                     self.dismiss(animated: true, completion: nil)
                     
-                } else if (overPopupView.frame.size.height > (maxHeight+minHeight)/2.0 && velocity < 160) || velocity < -320 {
+                } else if (overPopupView.frame.size.height > (maxHeight+minHeight)/2.0 && velocity < self.dismissDragSpeed/2) || velocity < -self.dismissDragSpeed {
                     // 最大高度显示
                     self.showMaxPopupView()
                 } else {
@@ -248,12 +172,13 @@ open class AZLOverPopupViewController: UIViewController, UIGestureRecognizerDele
                     self.showMinPopupView()
                 }
                 
-                self.transitionPercent = nil
-            default: break
+            default: 
+                break
             }
         }
     }
     
+    /// 空白点击
     @objc
     func dismissTap(recognizer: UITapGestureRecognizer) {
         if let overPopupView = self.overPopupDelegate?.overPopupView() {
@@ -267,6 +192,7 @@ open class AZLOverPopupViewController: UIViewController, UIGestureRecognizerDele
 
 }
 
+// 过场动画设置
 extension AZLOverPopupViewController: UIViewControllerTransitioningDelegate {
     
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
@@ -292,6 +218,6 @@ extension AZLOverPopupViewController: UIViewControllerTransitioningDelegate {
     }
     
     public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        return self.transitionPercent
+        return nil
     }
 }

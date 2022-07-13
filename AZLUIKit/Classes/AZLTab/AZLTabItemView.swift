@@ -7,9 +7,14 @@
 
 import UIKit
 
-open class AZLBaseTabItemView: UIView {
+public protocol AZLSelectable {
     /// 更新选中/未选中时的样式
-    open func updateUI(isSelected:Bool) {
+    func updateUI(isSelected: Bool)
+}
+
+open class AZLBaseTabItemView: UIView, AZLSelectable {
+    /// 更新选中/未选中时的样式
+    open func updateUI(isSelected: Bool) {
         // 继承重写
     }
 }
@@ -17,27 +22,27 @@ open class AZLBaseTabItemView: UIView {
 public class AZLTabItemView: AZLBaseTabItemView {
     
     /// 未选中时的图片
-    public var normalImage:UIImage?
+    public var normalImage: UIImage?
     /// 选中时的图片
-    public var selectedImage:UIImage?
+    public var selectedImage: UIImage?
     
     /// 未选中时的颜色
-    public var normalColor:UIColor?
+    public var normalColor: UIColor?
     /// 选中时的颜色
-    public var seletedColor:UIColor?
+    public var seletedColor: UIColor?
     
     /// 未选中时的字体
-    public var normalFont:UIFont?
+    public var normalFont: UIFont?
     /// 选中时的字体
-    public var selectedFont:UIFont?
+    public var selectedFont: UIFont?
     
     /// 显示的文字内容
-    public var nameString:String?
+    public var nameString: String?
     
     /// 文字显示的label
-    private var nameLabel:UILabel?
+    private var nameLabel: UILabel?
     /// 显示图标的view
-    private var imageView:UIImageView?
+    private var imageView: UIImageView?
     
     public override func awakeFromNib() {
         super.awakeFromNib()
@@ -70,17 +75,17 @@ public class AZLTabItemView: AZLBaseTabItemView {
             if let image = self.selectedImage {
                 self.imageView?.image = image
                 self.imageView?.frame = CGRect.init(x: (self.bounds.size.width-image.size.width)/2, y: 0, width: image.size.width, height: image.size.height)
-            }else{
+            } else {
                 self.imageView?.image = nil
                 self.imageView?.isHidden = true
             }
             self.nameLabel?.textColor = self.seletedColor
             self.nameLabel?.font = self.selectedFont
-        }else{
+        } else {
             if let image = self.normalImage {
                 self.imageView?.image = image
                 self.imageView?.frame = CGRect.init(x: (self.bounds.size.width-image.size.width)/2, y: 0, width: image.size.width, height: image.size.height)
-            }else{
+            } else {
                 self.imageView?.image = nil
                 self.imageView?.isHidden = true
             }
@@ -94,7 +99,7 @@ public class AZLTabItemView: AZLBaseTabItemView {
         
         if self.imageView?.isHidden == false {
             self.nameLabel?.frame = CGRect.init(x: 0, y: self.imageView!.frame.origin.y+self.imageView!.frame.size.height+4, width: self.bounds.size.width, height: fixHeight)
-        }else{
+        } else {
             self.nameLabel?.frame = CGRect.init(x: 0, y: 0, width: self.bounds.size.width, height: fixHeight)
         }
     }

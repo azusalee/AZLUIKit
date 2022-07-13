@@ -18,8 +18,8 @@ class DemoTabViewController: AZLTabViewController {
         self.tabView?.itemLayoutInset = UIEdgeInsets.init(top: 20, left: 0, bottom: 0, right: 0)
         
         self.tabView?.setTabArray([
-            (image:UIImage(named: "home"), selectedImage:nil, name:"Home", normalColor:UIColor.black, selectedColor:UIColor.red, normalFont:UIFont.systemFont(ofSize: 13), selectedFont:UIFont.systemFont(ofSize: 13)),
-            (image:UIImage(named: "profile"), selectedImage:nil, name:"Profile", normalColor:UIColor.black, selectedColor:UIColor.red, normalFont:UIFont.systemFont(ofSize: 13), selectedFont:UIFont.systemFont(ofSize: 13))
+            AZLTabItem(name: "Home", image: UIImage(named: "home"), color: UIColor.black, selectedColor: UIColor.red, font: UIFont.systemFont(ofSize: 13)),
+            AZLTabItem(name: "Profile", image: UIImage(named: "profile"), color: UIColor.black, selectedColor: UIColor.red, font: UIFont.systemFont(ofSize: 13))
         ])
         
         // 设置中间item

@@ -10,30 +10,35 @@ import AZLExtendSwift
 
 public class AZLTabView: UIView {
     /// itemView的间隔
-    public var itemLayoutInset:UIEdgeInsets = .zero {
-        didSet{
+    public var itemLayoutInset: UIEdgeInsets = .zero {
+        didSet {
             self.setNeedsLayout()
         }
     }
     /// 中间View的间隔
-    public var centerLayoutInset:UIEdgeInsets = .zero {
-        didSet{
+    public var centerLayoutInset: UIEdgeInsets = .zero {
+        didSet {
             self.setNeedsLayout()
         }
     }
     /// itemView被点击时的回调
-    public var itemShouldSelectBlock:((_ index:Int) -> Bool)?
+    public var itemShouldSelectBlock: ((_ index:Int) -> Bool)?
 
     /// itemView数组
-    private var itemViews:[AZLBaseTabItemView] = []
+    private var itemViews: [AZLBaseTabItemView] = []
     /// 中间View
-    private var centerView:UIView?
+    private var centerView: UIView?
     /// 中间view的点击事件
-    private var centerViewTapBlock:(() -> Void)?
+    private var centerViewTapBlock: (() -> Void)?
     /// 当前选中索引
-    private var selectedIndex:Int = 0
+    private var selectedIndex: Int = 0
     /// 背景view
-    private var backgroundView:UIView?
+    private var backgroundView: UIView?
+    
+    /// 正在点击的view
+    private var touchView: UIView?
+    /// 正在点击的view的itemIndex，如果点击的位置不属于itemView时此处为-1
+    private var touchIndex: Int = -1
 
     public override func awakeFromNib() {
         super.awakeFromNib()
@@ -55,32 +60,95 @@ public class AZLTabView: UIView {
     }
     
     func setup() {
-        let gesture = UITapGestureRecognizer.init(target: self, action: #selector(viewDidTap(gesture:)))
-        self.addGestureRecognizer(gesture)
+        //let gesture = UITapGestureRecognizer.init(target: self, action: #selector(viewDidTap(gesture:)))
+        //self.addGestureRecognizer(gesture)
     }
     
-    @objc
-    func viewDidTap(gesture:UITapGestureRecognizer) {
-        let tapLocation = gesture.location(in: self)
+    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        var touchView: UIView?
         var index = -1
-        for itemView in self.itemViews {
-            index += 1
-            if itemView.frame.contains(tapLocation) {
-                // tabItem被点
-                if self.itemShouldSelectBlock?(index) == true {
-                    self.select(index: index)
+        if let firstTouch = touches.first {
+            let tapLocation = firstTouch.location(in: self)
+            
+            for itemView in self.itemViews {
+                index += 1
+                if itemView.frame.contains(tapLocation) {
+                    // tabItem被点
+                    touchView = itemView
+                    itemView.updateUI(isSelected: true)
+                    break
                 }
-                break
+            }
+            if self.centerView?.frame.contains(tapLocation) == true {
+                // 中间图被点
+                touchView = self.centerView
+                if let view = self.centerView as? AZLSelectable {
+                    view.updateUI(isSelected: true)
+                }
             }
         }
-        if self.centerView?.frame.contains(tapLocation) == true {
-            // 中间图被点
-            self.centerViewTapBlock?()
+        
+        self.touchView = touchView
+        self.touchIndex = index
+    }
+    
+    public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let firstTouch = touches.first {
+            let tapLocation = firstTouch.location(in: self)
+            if self.touchView?.frame.contains(tapLocation) == true {
+                // 移动到里面
+                if let view = self.touchView as? AZLSelectable {
+                    view.updateUI(isSelected: true)
+                }
+            } else {
+                // 移动到外面
+                if let view = self.touchView as? AZLSelectable {
+                    view.updateUI(isSelected: false)
+                }
+            }
         }
+    }
+    
+    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let firstTouch = touches.first {
+            let tapLocation = firstTouch.location(in: self)
+            if self.touchView?.frame.contains(tapLocation) == true {
+                // 移动到里面
+                if self.touchView == self.centerView, let view = self.touchView as? AZLSelectable {
+                    view.updateUI(isSelected: false)
+                    self.centerViewTapBlock?()
+                } else if self.touchIndex != -1 {
+                    if self.itemShouldSelectBlock?(self.touchIndex) == true {
+                        self.select(index: self.touchIndex)
+                    } else if self.selectedIndex == self.touchIndex {
+                        self.itemViews[self.selectedIndex].updateUI(isSelected: true)
+                    }
+                }
+            } else {
+                // 移动到外面
+                if self.touchView == self.centerView, let view = self.touchView as? AZLSelectable {
+                    view.updateUI(isSelected: false)
+                } else if self.selectedIndex == self.touchIndex {
+                    self.itemViews[self.selectedIndex].updateUI(isSelected: true)
+                }
+            }
+        }
+        self.touchView = nil
+        self.touchIndex = -1
+    }
+    
+    public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if self.selectedIndex == self.touchIndex {
+            self.itemViews[self.selectedIndex].updateUI(isSelected: true)
+        } else if let view = self.touchView as? AZLSelectable {
+            view.updateUI(isSelected: false)
+        }
+        self.touchView = nil
+        self.touchIndex = -1
     }
     
     /// 设置背景View
-    public func setBackgroundView(view:UIView?) {
+    public func setBackgroundView(view: UIView?) {
         self.backgroundView?.removeFromSuperview()
         if view != nil {
             self.insertSubview(view!, at: 0)
@@ -89,7 +157,7 @@ public class AZLTabView: UIView {
     }
     
     /// 设置当前选中itemView(index < itemViews.count才有效)
-    public func select(index:Int) {
+    public func select(index: Int) {
         if index < self.itemViews.count {
             self.itemViews[self.selectedIndex].updateUI(isSelected: false)
             self.itemViews[index].updateUI(isSelected: true)
@@ -103,35 +171,35 @@ public class AZLTabView: UIView {
     }
     
     /// 设置数据
-    public func setTabArray(_ tabArray:[(image:UIImage?, selectedImage:UIImage?, name:String, normalColor:UIColor?, selectedColor:UIColor?, normalFont:UIFont?, selectedFont:UIFont?)]) {
+    public func setTabArray(_ tabArray: [AZLTabItem]) {
         let width = self.bounds.width/4
         let height = self.bounds.height
-        var itemViews:[AZLBaseTabItemView] = []
+        var itemViews: [AZLBaseTabItemView] = []
         for tabItem in tabArray {
             let itemView = AZLTabItemView.init(frame: CGRect.init(x: 0, y: 0, width: width, height: height))
             itemView.normalImage = tabItem.image
             if tabItem.selectedImage != nil {
                 itemView.selectedImage = tabItem.selectedImage
-            }else{
+            } else {
                 if tabItem.selectedColor != nil {
                     itemView.selectedImage = tabItem.image?.azl_tintImage(color: tabItem.selectedColor!)
-                }else{
+                } else {
                     itemView.selectedImage = tabItem.image
                 }
             }
             itemView.nameString = tabItem.name
-            itemView.normalColor = tabItem.normalColor
-            itemView.seletedColor = tabItem.selectedColor ?? tabItem.normalColor
-            itemView.normalFont = tabItem.normalFont
-            itemView.selectedFont = tabItem.selectedFont ?? tabItem.normalFont
+            itemView.normalColor = tabItem.color
+            itemView.seletedColor = tabItem.selectedColor ?? tabItem.color
+            itemView.normalFont = tabItem.font
+            itemView.selectedFont = tabItem.selectedFont ?? tabItem.font
             
             itemViews.append(itemView)
         }
         self.setTabArray(itemViews: itemViews)
     }
     
-    /// 设置自定义itemView
-    public func setTabArray(itemViews:[AZLBaseTabItemView]) {
+    /// 设置自定义itemView，这里设置的view不会自动排列，需要自己设置好frame
+    public func setTabArray(itemViews: [AZLBaseTabItemView]) {
         for itemView in self.itemViews {
             itemView.removeFromSuperview()
         }
@@ -147,8 +215,8 @@ public class AZLTabView: UIView {
         self.setNeedsLayout()
     }
     
-    /// 设置中心View
-    public func setCenterView(_ centerView:UIView?, tapBlock:(() -> Void)?) {
+    /// 设置中心View，如果centerView符合AZLSelectable，那么点击的时候会触发其updateUI(isSelected)的方法
+    public func setCenterView(_ centerView: UIView?, tapBlock: (() -> Void)?) {
         self.centerView?.removeFromSuperview()
         if centerView != nil {
             self.addSubview(centerView!)
@@ -173,9 +241,9 @@ public class AZLTabView: UIView {
                 let leftMaxCount = (self.itemViews.count+1)/2
                 let rightMaxCount = self.itemViews.count-leftMaxCount
                 // 分开两边
-                let leftItemWidth:CGFloat = (totalWidth/2-self.centerLayoutInset.left)/CGFloat(leftMaxCount)
+                let leftItemWidth: CGFloat = (totalWidth/2-self.centerLayoutInset.left)/CGFloat(leftMaxCount)
                 var index = 0
-                var left:CGFloat = self.itemLayoutInset.left
+                var left: CGFloat = self.itemLayoutInset.left
                 while index < leftMaxCount {
                     let itemView = self.itemViews[index]
                     itemView.frame = CGRect.init(x: left, y: self.itemLayoutInset.top, width: leftItemWidth, height: self.bounds.height-self.itemLayoutInset.top)
@@ -193,11 +261,11 @@ public class AZLTabView: UIView {
                         index += 1
                     }
                 }
-            }else{
+            } else {
                 // 没中间图时的布局
                 var index = 0
                 let itemWidth = totalWidth/CGFloat(self.itemViews.count)
-                var left:CGFloat = self.itemLayoutInset.left
+                var left: CGFloat = self.itemLayoutInset.left
                 while index < self.itemViews.count {
                     let itemView = self.itemViews[index]
                     itemView.frame = CGRect.init(x: left, y: self.itemLayoutInset.top, width: itemWidth, height: self.bounds.height-self.itemLayoutInset.top)
@@ -214,7 +282,7 @@ public class AZLTabView: UIView {
 // 常用背景View创建方法
 public extension AZLTabView {
     /// 中间半圆镂空背景，需要设置centerView后，再设置才有效
-    func addCenterHollowBackgroundView(centerTop:CGFloat, color:UIColor) {
+    func addCenterHollowBackgroundView(centerTop: CGFloat, color: UIColor) {
         let corner:CGFloat = 8
         let centerSize:CGFloat = self.centerView?.bounds.size.width ?? 0
         let centerInset:CGFloat = self.centerLayoutInset.left

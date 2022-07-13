@@ -19,6 +19,9 @@ open class AZLBaseTabItemView: UIView, AZLSelectable {
     }
 }
 
+/**
+一个含有label和image的视图，用于tabView的item显示
+ */
 public class AZLTabItemView: AZLBaseTabItemView {
     
     /// 未选中时的图片
@@ -70,6 +73,7 @@ public class AZLTabItemView: AZLBaseTabItemView {
         self.addSubview(self.nameLabel!)
     }
     
+    /// 更新ui
     public override func updateUI(isSelected: Bool) {
         if isSelected {
             if let image = self.selectedImage {

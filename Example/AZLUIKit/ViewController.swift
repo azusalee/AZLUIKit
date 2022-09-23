@@ -11,6 +11,8 @@ import UIKit
 enum DemoType: Int, CaseIterable {
     case tab
     case overPopup
+    case floatView
+    case processView
     
     func title() -> String {
         switch self {
@@ -18,15 +20,20 @@ enum DemoType: Int, CaseIterable {
             return "tab"
         case .overPopup:
             return "overPopup"
+        
+        case .floatView:
+            return "floatView"
+        case .processView:
+            return "processView"
         }
     }
     
     func isPush() -> Bool {
         switch self {
-        case .tab:
-            return true
-        default:
+        case .overPopup:
             return false
+        default:
+            return true
         }
     }
     
@@ -36,6 +43,10 @@ enum DemoType: Int, CaseIterable {
             return DemoTabViewController()
         case .overPopup:
             return DemoOverPopupViewController()
+        case .floatView:
+            return FloatViewController()
+        case .processView:
+            return ProcessViewController()
         }
     }
 }

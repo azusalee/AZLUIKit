@@ -14,6 +14,8 @@
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
+		75E84F5928DD4FCB00924191 /* FloatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E84F5828DD4FCB00924191 /* FloatViewController.swift */; };
+		75E84F5B28DD694800924191 /* ProcessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E84F5A28DD694800924191 /* ProcessViewController.swift */; };
 		8C282EFF2702F3C10004E1DC /* DemoTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C282EFE2702F3C10004E1DC /* DemoTabViewController.swift */; };
 		8C282F042702F5000004E1DC /* DemoOverPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C282F022702F5000004E1DC /* DemoOverPopupViewController.swift */; };
 		8C282F052702F5000004E1DC /* DemoOverPopupViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C282F032702F5000004E1DC /* DemoOverPopupViewController.xib */; };
@@ -47,6 +49,8 @@
 		607FACE51AFB9204008FA782 /* AZLUIKit_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AZLUIKit_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
+		75E84F5828DD4FCB00924191 /* FloatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatViewController.swift; sourceTree = "<group>"; };
+		75E84F5A28DD694800924191 /* ProcessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessViewController.swift; sourceTree = "<group>"; };
 		7A03F5E13C5AFD662FF09D16 /* Pods-AZLUIKit_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AZLUIKit_Example.release.xcconfig"; path = "Target Support Files/Pods-AZLUIKit_Example/Pods-AZLUIKit_Example.release.xcconfig"; sourceTree = "<group>"; };
 		8C282EFE2702F3C10004E1DC /* DemoTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoTabViewController.swift; sourceTree = "<group>"; };
 		8C282F022702F5000004E1DC /* DemoOverPopupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoOverPopupViewController.swift; sourceTree = "<group>"; };
@@ -163,6 +167,8 @@
 				8C282EFE2702F3C10004E1DC /* DemoTabViewController.swift */,
 				8C282F022702F5000004E1DC /* DemoOverPopupViewController.swift */,
 				8C282F032702F5000004E1DC /* DemoOverPopupViewController.xib */,
+				75E84F5828DD4FCB00924191 /* FloatViewController.swift */,
+				75E84F5A28DD694800924191 /* ProcessViewController.swift */,
 			);
 			name = Demo;
 			sourceTree = "<group>";
@@ -351,7 +357,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75E84F5928DD4FCB00924191 /* FloatViewController.swift in Sources */,
 				8C282F042702F5000004E1DC /* DemoOverPopupViewController.swift in Sources */,
+				75E84F5B28DD694800924191 /* ProcessViewController.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				8C282EFF2702F3C10004E1DC /* DemoTabViewController.swift in Sources */,

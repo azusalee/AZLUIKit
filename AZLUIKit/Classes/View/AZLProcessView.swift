@@ -6,19 +6,20 @@
 //
 
 import UIKit
+import QuartzCore
 
 /// 进度条
 public class AZLProcessView: UIView {
     
     /// 已完成部分的layer
-    public var processLayer: CAShapeLayer?
+    public var processLayer: CALayer?
     /// 位于百分比位的锚点视图
     var anchorView: UIView?
     
     /// 已完成部分颜色
     public var processColor: UIColor = UIColor.blue {
         didSet {
-            self.processLayer?.strokeColor = processColor.cgColor
+            self.processLayer?.backgroundColor = processColor.cgColor
         }
     }
     
@@ -52,10 +53,12 @@ public class AZLProcessView: UIView {
     }
     
     private func setup() {
-        let layer = CAShapeLayer.init()
+        let layer = CALayer.init()
         layer.frame = self.bounds
         self.processLayer = layer
-        self.processLayer?.strokeColor = self.processColor.cgColor
+        //self.processLayer?.strokeColor = self.processColor.cgColor
+        self.processLayer?.frame = CGRect.init(x: 0, y: 0, width: self.bounds.width*process, height: self.bounds.size.height)
+        self.processLayer?.backgroundColor = self.processColor.cgColor
         self.layer.addSublayer(layer)
         
         // 添加手势
@@ -94,24 +97,22 @@ public class AZLProcessView: UIView {
         self.setNeedsLayout()
     }
     
-    public override func layoutSubviews() {
-        super.layoutSubviews()
-        self.processLayer?.frame = self.bounds
+    func updateProcessUI() {
         var process = self.process
         process = max(process, 0)
         process = min(process, 1)
         
         self.anchorView?.center = CGPoint.init(x: self.bounds.size.width*process, y: self.bounds.size.height/2)
-        if process == 0 {
-            self.processLayer?.isHidden = true
-            return
-        }
-        self.processLayer?.isHidden = false
-        let path = UIBezierPath.init()
-        path.move(to: CGPoint.init(x: 0, y: self.bounds.height/2))
-        path.addLine(to: CGPoint.init(x: self.bounds.width*process, y: self.bounds.height/2))
-        self.processLayer?.path = path.cgPath
-        self.processLayer?.lineWidth = self.bounds.height
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        self.processLayer?.frame = CGRect.init(x: 0, y: 0, width: self.bounds.width*process, height: self.bounds.size.height)
+        self.processLayer?.cornerRadius = self.layer.cornerRadius
+        CATransaction.commit()
+    }
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        self.updateProcessUI()
     }
 
 }

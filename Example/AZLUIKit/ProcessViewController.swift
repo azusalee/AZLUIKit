@@ -18,6 +18,12 @@ class ProcessViewController: UIViewController {
         
         processView.processColor = UIColor.red
         processView.backgroundColor = UIColor.gray
+        processView.layer.cornerRadius = 5
+        
+        let anchorView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: 12, height: 12));
+        anchorView.backgroundColor = UIColor.blue
+        anchorView.layer.cornerRadius = 6
+        processView.setAnchorView(view: anchorView)
         
         self.view.addSubview(self.processView)
     }

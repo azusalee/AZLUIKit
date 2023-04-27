@@ -7,12 +7,18 @@
 //
 
 import UIKit
+import AZLUIKit
+
+extension String: AZLPopupListItem {
+    public var displayName: String { return self }
+}
 
 enum DemoType: Int, CaseIterable {
     case tab
     case overPopup
     case floatView
     case processView
+    case popupList
     
     func title() -> String {
         switch self {
@@ -25,12 +31,14 @@ enum DemoType: Int, CaseIterable {
             return "floatView"
         case .processView:
             return "processView"
+        case .popupList:
+            return "popupList"
         }
     }
     
     func isPush() -> Bool {
         switch self {
-        case .overPopup:
+        case .overPopup, .popupList:
             return false
         default:
             return true
@@ -47,6 +55,21 @@ enum DemoType: Int, CaseIterable {
             return FloatViewController()
         case .processView:
             return ProcessViewController()
+        case .popupList:
+            let controller = AZLPopupListViewController<String>()
+            controller.dataArray = ["item1", "item2", "item3"]
+            controller.appearPoint = CGPoint.init(x: 200, y: 200)
+            return controller
+        }
+    }
+    
+    func isAnimate() -> Bool {
+        switch self {
+        case .popupList:
+            return false
+            
+        default:
+            return true
         }
     }
 }
@@ -88,9 +111,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let type = self.dataArray[indexPath.row]
         let controller = type.demoVC()
         if type.isPush() {
-            self.navigationController?.pushViewController(controller, animated: true)
+            self.navigationController?.pushViewController(controller, animated: type.isAnimate())
         } else {
-            self.present(controller, animated: true, completion: nil)
+            self.present(controller, animated: type.isAnimate(), completion: nil)
         }
         
     }

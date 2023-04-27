@@ -41,4 +41,5 @@ Use swift 5.0, ViewController and View
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   s.dependency 'AZLExtendSwift'
+  s.dependency 'SnapKit'
 end

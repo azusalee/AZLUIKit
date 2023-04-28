@@ -58,7 +58,7 @@ enum DemoType: Int, CaseIterable {
         case .popupList:
             let controller = AZLPopupListViewController<String>()
             controller.dataArray = ["item1", "item2", "item3"]
-            controller.appearPoint = CGPoint.init(x: 200, y: 200)
+            controller.appearPoint = CGPoint.init(x: 200, y: 300)
             return controller
         }
     }
